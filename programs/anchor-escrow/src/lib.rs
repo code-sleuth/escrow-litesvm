@@ -15,8 +15,8 @@ declare_id!("FircrADQ2wgGuvpm8qneNCfKM7o5zoHTWnDQxngpTQ3J");
 pub mod anchor_escrow {
     use super::*;
 
-    pub fn make(ctx: Context<Make>, seed: u64, deposit: u64, receive: u64) -> Result<()> {
-        ctx.accounts.init_escrow(seed, receive, &ctx.bumps)?;
+    pub fn make(ctx: Context<Make>, seed: u64, deposit: u64, receive: u64, lock_period: i64) -> Result<()> {
+        ctx.accounts.init_escrow(seed, receive, lock_period, &ctx.bumps)?;
         ctx.accounts.deposit(deposit)
     }
 
@@ -28,4 +28,10 @@ pub mod anchor_escrow {
         ctx.accounts.deposit()?;
         ctx.accounts.withdraw_and_close_vault()
     }
+}
+
+#[error_code]
+pub enum EscrowError {
+    #[msg("Escrow is still locked. Lock period has not elapsed yet.")]
+    EscrowLocked,
 }

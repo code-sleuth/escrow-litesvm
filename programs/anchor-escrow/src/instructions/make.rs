@@ -37,7 +37,9 @@ pub struct Make<'info> {
 }
 
 impl<'info> Make<'info> {
-    pub fn init_escrow(&mut self, seed: u64, receive: u64, bumps: &MakeBumps) -> Result<()> {
+    pub fn init_escrow(&mut self, seed: u64, receive: u64, lock_period: i64, bumps: &MakeBumps) -> Result<()> {
+        let clock = Clock::get()?;
+
         self.escrow.set_inner(Escrow {
             seed,
             maker: self.maker.key(),
@@ -45,6 +47,8 @@ impl<'info> Make<'info> {
             mint_b: self.mint_b.key(),
             receive,
             bump: bumps.escrow,
+            start_time: clock.slot as i64,
+            lock_period,
         });
 
         Ok(())
